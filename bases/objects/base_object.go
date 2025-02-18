@@ -1,10 +1,8 @@
-package bases
+package objects
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
-	"go-tools/bases/interfaces"
+	"go-tools/bases/objects/interfaces"
 	"reflect"
 )
 
@@ -39,22 +37,4 @@ func (b *BaseObject) Clone() (interfaces.Object, error) {
 	srcValue := reflect.ValueOf(b).Elem()
 	newObj.Elem().Set(srcValue)
 	return newObj.Interface().(interfaces.Object), nil
-}
-
-// DeepClone 深克隆
-func DeepClone(obj interfaces.Object) (interfaces.Object, error) {
-	// 序列化方案（推荐）
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	dec := gob.NewDecoder(&buf)
-
-	if err := enc.Encode(obj); err != nil {
-		return nil, err
-	}
-
-	copyObject := reflect.New(reflect.TypeOf(obj).Elem()).Interface().(interfaces.Object)
-	if err := dec.Decode(copyObject); err != nil {
-		return nil, err
-	}
-	return copyObject, nil
 }
